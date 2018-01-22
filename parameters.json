@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "namePrefix": {
+            "value": "ibftvw"
+        },
+        "authType": {
+            "value": "password"
+        },
+        "adminUsername": {
+            "value": "gethadmin"
+        },
+        "adminPassword": {
+            "value": null
+        },
+        "restrictAccess": {
+            "value": 0
+        },
+        "consortiumMemberId": {
+            "value": 0
+        },
+        "numBlockMakers": {
+            "value": 1
+        },
+        "numVoters": {
+            "value": 4
+        },
+        "numObservers": {
+            "value": 0
+        },
+        "vmSize": {
+            "value": "Standard_D2s_v3"
+        },
+        "ethereumNetworkID": {
+            "value": 10101010
+        },
+        "ethereumAccountPsswd": {
+            "value": null
+        },
+        "passphrase": {
+            "value": null
+        },
+        "location": {
+            "value": "northeurope"
+        }
+    }
+}
