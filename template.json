@@ -165,7 +165,7 @@
         "cakeShopPort": 4000,
         "gethIPCPort": 30303,
         "bmVMNamePrefix": "[concat(variables('namingInfix'), '-bm')]",
-        "voterVMNamePrefix": "[concat(variables('namingInfix'), '-vtr')]",
+        "voterVMNamePrefix": "[concat(variables('namingInfix'), '-validator')]",
         "observerVMNamePrefix": "[concat(variables('namingInfix'), '-obs')]",
         "bmNICPrefix": "nic-bm",
         "voterNICPrefix": "nic-voter",
