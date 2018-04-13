@@ -54,16 +54,7 @@
                 "description": "If restrictAccess is set to 1, specify an individual IP address or IP subnet/address range here from where access to all endpoints will be allowed."
             }
         },
-        "numBlockMakers": {
-            "type": "int",
-            "defaultValue": 1,
-            "metadata": {
-                "description": "Number of mining nodes to create for each consortium member."
-            },
-            "minValue": 1,
-            "maxValue": 1
-        },
-        "numVoters": {
+        "numValidators": {
             "type": "int",
             "defaultValue": 1,
             "metadata": {
@@ -165,10 +156,10 @@
         "cakeShopPort": 4000,
         "gethIPCPort": 30303,
         "bmVMNamePrefix": "[concat(variables('namingInfix'), '-bm')]",
-        "voterVMNamePrefix": "[concat(variables('namingInfix'), '-vtr')]",
+        "voterVMNamePrefix": "[concat(variables('namingInfix'), '-validator')]",
         "observerVMNamePrefix": "[concat(variables('namingInfix'), '-obs')]",
         "bmNICPrefix": "nic-bm",
-        "voterNICPrefix": "nic-voter",
+        "voterNICPrefix": "nic-validator",
         "observerNICPrefix": "nic-observer",
         "subnetName": "[uniqueString(concat(resourceGroup().id, concat(variables('namingInfix'), 'subnet')))]",
         "subnetPrefix": "[replace('10._.0.0/24','_', string(parameters('consortiumMemberId')))]",
