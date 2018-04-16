@@ -1,6 +1,8 @@
 set -u
 set -e
 
+export PATH=/home/gethadmin/.local/bin:$PATH
+
 echo "[*] Starting Constellation nodes"
 nohup constellation-node tm.conf 1>> ~/constellation/constellation.log &
 
@@ -9,6 +11,7 @@ nohup geth \
                 --identity "[your server name]" \
                 --rpc \
                 --rpcaddr "0.0.0.0" \
+                --datadir ".ethereum" \
                 --rpcport "8545" \
                 --rpccorsdomain "*" \
                 --port "30303" \
