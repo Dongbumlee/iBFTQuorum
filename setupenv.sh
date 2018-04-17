@@ -1,3 +1,4 @@
+cd ..
 ##Eninstall Go old version
 sudo apt-get remove golang-go
 sudo apt-get remove --auto-remove golang-go
