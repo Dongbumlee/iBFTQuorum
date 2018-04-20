@@ -156,7 +156,7 @@
         "cakeShopPort": 4000,
         "gethIPCPort": 30303,
         "bmVMNamePrefix": "[concat(variables('namingInfix'), '-bm')]",
-        "voterVMNamePrefix": "[concat(variables('namingInfix'), '-validator')]",
+        "validatorVMNamePrefix": "[concat(variables('namingInfix'), '-validator')]",
         "observerVMNamePrefix": "[concat(variables('namingInfix'), '-obs')]",
         "bmNICPrefix": "nic-bm",
         "voterNICPrefix": "nic-validator",
@@ -262,7 +262,7 @@
                         "value": "[variables('adminSitePort')]"
                     },
                     "numInboundNATRules": {
-                        "value": "[add(add(parameters('numVoters'), parameters('numBlockmakers')), parameters('numObservers'))]"
+                        "value": "[add(parameters('numValidators'), parameters('numObservers'))]"
                     },
                     "inboundNATRuleCakeshopStartingPort": {
                         "value": "[variables('cakeShopStartingPort')]"
@@ -315,7 +315,7 @@
                             "description": "Allow cakeshop IDE",
                             "protocol": "*",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "[concat(string(variables('cakeShopStartingPort')),'-', string(sub(add(4000, add(parameters('numBlockMakers'), add(parameters('numObservers'), parameters('numVoters')))),1)))]",
+                            "destinationPortRange": "[concat(string(variables('cakeShopStartingPort')),'-', string(sub(add(4000, add(parameters('numObservers'), parameters('numValidators'))),1)))]",
                             "sourceAddressPrefix": "[variables('sourceAddressPrefix')]",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
@@ -373,82 +373,6 @@
         },
         {
             "apiVersion": "[variables('apiVersionDeployments')]",
-            "name": "bmVMLinkedTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "dependsOn": [
-                "[concat('Microsoft.Network/virtualNetworks/', variables('vNet').name)]",
-                "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
-                "loadBalancerLinkedTemplate"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(parameters('baseUrl'), '/nested/VMAuth', '-', parameters('authType'), '.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "apiVersionVirtualMachines": {
-                        "value": "[variables('apiVersionVirtualMachines')]"
-                    },
-                    "apiVersionNetworkInterfaces": {
-                        "value": "[variables('apiVersionNetworkInterfaces')]"
-                    },
-                    "storagePerformance": {
-                        "value": "[parameters('storagePerformance')]"
-                    },
-                    "loadBalancerName": {
-                        "value": "[variables('loadBalancerName')]"
-                    },
-                    "loadBalancerBackendAddressPoolName": {
-                        "value": "[variables('loadBalancerBackendAddressPoolName')]"
-                    },
-                    "loadBalancerInboundNatRuleNamePrefix": {
-                        "value": "[variables('loadBalancerInboundNatRuleNamePrefix')]"
-                    },
-                    "subnetRef": {
-                        "value": "[variables('subnetRef')]"
-                    },
-                    "vmNamePrefix": {
-                        "value": "[variables('bmVMNamePrefix')]"
-                    },
-                    "numVMs": {
-                        "value": "[parameters('numBlockMakers')]"
-                    },
-                    "offset": {
-                        "value": 0
-                    },
-                    "nicPrefix": {
-                        "value": "[variables('bmNICPrefix')]"
-                    },
-                    "availabilitySetName": {
-                        "value": "[variables('availabilitySetName')]"
-                    },
-                    "vmSize": {
-                        "value": "[parameters('vmSize')]"
-                    },
-                    "adminUsername": {
-                        "value": "[parameters('adminUsername')]"
-                    },
-                    "adminPassword": {
-                        "value": "[parameters('adminPassword')]"
-                    },
-                    "adminSSHKey": {
-                        "value": "[parameters('adminSSHKey')]"
-                    },
-                    "ubuntuImage": {
-                        "value": "[variables('ubuntuImage')]"
-                    },
-                    "namingInfix": {
-                        "value": "[variables('namingInfix')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "[variables('apiVersionDeployments')]",
             "name": "voterVMLinkedTemplate",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
@@ -485,13 +409,10 @@
                         "value": "[variables('subnetRef')]"
                     },
                     "vmNamePrefix": {
-                        "value": "[variables('voterVMNamePrefix')]"
+                        "value": "[variables('validatorVMNamePrefix')]"
                     },
                     "numVMs": {
-                        "value": "[parameters('numVoters')]"
-                    },
-                    "offset": {
-                        "value": "[parameters('numBlockMakers')]"
+                        "value": "[parameters('numValidators')]"
                     },
                     "nicPrefix": {
                         "value": "[variables('voterNICPrefix')]"
@@ -567,7 +488,7 @@
                         "value": "[parameters('numObservers')]"
                     },
                     "offset": {
-                        "value": "[add(parameters('numBlockMakers'), parameters('numVoters'))]"
+                        "value": "[parameters('numValidators')]"
                     },
                     "nicPrefix": {
                         "value": "[variables('observerNICPrefix')]"
@@ -617,14 +538,11 @@
                     "bmVMNamePrefix": {
                         "value": "[variables('bmVMNamePrefix')]"
                     },
-                    "numBMs": {
-                        "value": "[parameters('numBlockMakers')]"
-                    },
-                    "voterVMNamePrefix": {
-                        "value": "[variables('voterVMNamePrefix')]"
+                    "validatorVMNamePrefix": {
+                        "value": "[variables('validatorVMNamePrefix')]"
                     },
                     "numVoters": {
-                        "value": "[parameters('numVoters')]"
+                        "value": "[parameters('numValidators')]"
                     },
                     "observerVMNamePrefix": {
                         "value": "[variables('observerVMNamePrefix')]"
@@ -682,14 +600,11 @@
                     "bmVMNamePrefix": {
                         "value": "[variables('bmVMNamePrefix')]"
                     },
-                    "numBMs": {
-                        "value": "[parameters('numBlockMakers')]"
-                    },
-                    "voterVMNamePrefix": {
-                        "value": "[variables('voterVMNamePrefix')]"
+                    "validatorVMNamePrefix": {
+                        "value": "[variables('validatorVMNamePrefix')]"
                     },
                     "numVoters": {
-                        "value": "[parameters('numVoters')]"
+                        "value": "[parameters('numValidators')]"
                     },
                     "observerVMNamePrefix": {
                         "value": "[variables('observerVMNamePrefix')]"

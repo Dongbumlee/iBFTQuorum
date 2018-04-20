@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "namePrefix": {
-            "value": "ibftvw"
+            "value": "ibft"
         },
         "authType": {
             "value": "password"
@@ -20,10 +20,7 @@
         "consortiumMemberId": {
             "value": 0
         },
-        "numBlockMakers": {
-            "value": 1
-        },
-        "numVoters": {
+        "numValidators": {
             "value": 4
         },
         "numObservers": {
@@ -42,7 +39,7 @@
             "value": null
         },
         "location": {
-            "value": "northeurope"
+            "value": "westus"
         }
     }
 }
