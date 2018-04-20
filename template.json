@@ -414,6 +414,9 @@
                     "numVMs": {
                         "value": "[parameters('numValidators')]"
                     },
+                    "offset": {
+                        "value": "[parameters('numValidators')]"
+                    },
                     "nicPrefix": {
                         "value": "[variables('voterNICPrefix')]"
                     },
@@ -525,7 +528,7 @@
             "name": "vmExtensionLinkedTemplate",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
-                "bmVMLinkedTemplate",
+             
                 "voterVMLinkedTemplate"
             ],
             "properties": {
