@@ -54,7 +54,16 @@
                 "description": "If restrictAccess is set to 1, specify an individual IP address or IP subnet/address range here from where access to all endpoints will be allowed."
             }
         },
-        "numValidators": {
+        "numBlockMakers": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Number of mining nodes to create for each consortium member."
+            },
+            "minValue": 1,
+            "maxValue": 1
+        },
+        "numVoters": {
             "type": "int",
             "defaultValue": 1,
             "metadata": {
@@ -156,10 +165,10 @@
         "cakeShopPort": 4000,
         "gethIPCPort": 30303,
         "bmVMNamePrefix": "[concat(variables('namingInfix'), '-bm')]",
-        "validatorVMNamePrefix": "[concat(variables('namingInfix'), '-validator')]",
+        "voterVMNamePrefix": "[concat(variables('namingInfix'), '-vtr')]",
         "observerVMNamePrefix": "[concat(variables('namingInfix'), '-obs')]",
         "bmNICPrefix": "nic-bm",
-        "voterNICPrefix": "nic-validator",
+        "voterNICPrefix": "nic-voter",
         "observerNICPrefix": "nic-observer",
         "subnetName": "[uniqueString(concat(resourceGroup().id, concat(variables('namingInfix'), 'subnet')))]",
         "subnetPrefix": "[replace('10._.0.0/24','_', string(parameters('consortiumMemberId')))]",
@@ -262,7 +271,7 @@
                         "value": "[variables('adminSitePort')]"
                     },
                     "numInboundNATRules": {
-                        "value": "[add(parameters('numValidators'), parameters('numObservers'))]"
+                        "value": "[add(add(parameters('numVoters'), parameters('numBlockmakers')), parameters('numObservers'))]"
                     },
                     "inboundNATRuleCakeshopStartingPort": {
                         "value": "[variables('cakeShopStartingPort')]"
@@ -315,7 +324,7 @@
                             "description": "Allow cakeshop IDE",
                             "protocol": "*",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "[concat(string(variables('cakeShopStartingPort')),'-', string(sub(add(4000, add(parameters('numObservers'), parameters('numValidators'))),1)))]",
+                            "destinationPortRange": "[concat(string(variables('cakeShopStartingPort')),'-', string(sub(add(4000, add(parameters('numBlockMakers'), add(parameters('numObservers'), parameters('numVoters')))),1)))]",
                             "sourceAddressPrefix": "[variables('sourceAddressPrefix')]",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
@@ -373,6 +382,82 @@
         },
         {
             "apiVersion": "[variables('apiVersionDeployments')]",
+            "name": "bmVMLinkedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', variables('vNet').name)]",
+                "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
+                "loadBalancerLinkedTemplate"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('baseUrl'), '/nested/VMAuth', '-', parameters('authType'), '.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "apiVersionVirtualMachines": {
+                        "value": "[variables('apiVersionVirtualMachines')]"
+                    },
+                    "apiVersionNetworkInterfaces": {
+                        "value": "[variables('apiVersionNetworkInterfaces')]"
+                    },
+                    "storagePerformance": {
+                        "value": "[parameters('storagePerformance')]"
+                    },
+                    "loadBalancerName": {
+                        "value": "[variables('loadBalancerName')]"
+                    },
+                    "loadBalancerBackendAddressPoolName": {
+                        "value": "[variables('loadBalancerBackendAddressPoolName')]"
+                    },
+                    "loadBalancerInboundNatRuleNamePrefix": {
+                        "value": "[variables('loadBalancerInboundNatRuleNamePrefix')]"
+                    },
+                    "subnetRef": {
+                        "value": "[variables('subnetRef')]"
+                    },
+                    "vmNamePrefix": {
+                        "value": "[variables('bmVMNamePrefix')]"
+                    },
+                    "numVMs": {
+                        "value": "[parameters('numBlockMakers')]"
+                    },
+                    "offset": {
+                        "value": 0
+                    },
+                    "nicPrefix": {
+                        "value": "[variables('bmNICPrefix')]"
+                    },
+                    "availabilitySetName": {
+                        "value": "[variables('availabilitySetName')]"
+                    },
+                    "vmSize": {
+                        "value": "[parameters('vmSize')]"
+                    },
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "adminPassword": {
+                        "value": "[parameters('adminPassword')]"
+                    },
+                    "adminSSHKey": {
+                        "value": "[parameters('adminSSHKey')]"
+                    },
+                    "ubuntuImage": {
+                        "value": "[variables('ubuntuImage')]"
+                    },
+                    "namingInfix": {
+                        "value": "[variables('namingInfix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "[variables('apiVersionDeployments')]",
             "name": "voterVMLinkedTemplate",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
@@ -409,13 +494,13 @@
                         "value": "[variables('subnetRef')]"
                     },
                     "vmNamePrefix": {
-                        "value": "[variables('validatorVMNamePrefix')]"
+                        "value": "[variables('voterVMNamePrefix')]"
                     },
                     "numVMs": {
-                        "value": "[parameters('numValidators')]"
+                        "value": "[parameters('numVoters')]"
                     },
                     "offset": {
-                        "value": "[parameters('numValidators')]"
+                        "value": "[parameters('numBlockMakers')]"
                     },
                     "nicPrefix": {
                         "value": "[variables('voterNICPrefix')]"
@@ -491,7 +576,7 @@
                         "value": "[parameters('numObservers')]"
                     },
                     "offset": {
-                        "value": "[parameters('numValidators')]"
+                        "value": "[add(parameters('numBlockMakers'), parameters('numVoters'))]"
                     },
                     "nicPrefix": {
                         "value": "[variables('observerNICPrefix')]"
@@ -528,7 +613,7 @@
             "name": "vmExtensionLinkedTemplate",
             "type": "Microsoft.Resources/deployments",
             "dependsOn": [
-             
+                "bmVMLinkedTemplate",
                 "voterVMLinkedTemplate"
             ],
             "properties": {
@@ -541,11 +626,14 @@
                     "bmVMNamePrefix": {
                         "value": "[variables('bmVMNamePrefix')]"
                     },
-                    "validatorVMNamePrefix": {
-                        "value": "[variables('validatorVMNamePrefix')]"
+                    "numBMs": {
+                        "value": "[parameters('numBlockMakers')]"
+                    },
+                    "voterVMNamePrefix": {
+                        "value": "[variables('voterVMNamePrefix')]"
                     },
                     "numVoters": {
-                        "value": "[parameters('numValidators')]"
+                        "value": "[parameters('numVoters')]"
                     },
                     "observerVMNamePrefix": {
                         "value": "[variables('observerVMNamePrefix')]"
@@ -603,11 +691,14 @@
                     "bmVMNamePrefix": {
                         "value": "[variables('bmVMNamePrefix')]"
                     },
-                    "validatorVMNamePrefix": {
-                        "value": "[variables('validatorVMNamePrefix')]"
+                    "numBMs": {
+                        "value": "[parameters('numBlockMakers')]"
+                    },
+                    "voterVMNamePrefix": {
+                        "value": "[variables('voterVMNamePrefix')]"
                     },
                     "numVoters": {
-                        "value": "[parameters('numValidators')]"
+                        "value": "[parameters('numVoters')]"
                     },
                     "observerVMNamePrefix": {
                         "value": "[variables('observerVMNamePrefix')]"
