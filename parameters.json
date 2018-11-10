@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "namePrefix": {
-            "value": "ibft"
+            "value": "neo"
         },
         "authType": {
             "value": "password"
@@ -20,14 +20,17 @@
         "consortiumMemberId": {
             "value": 0
         },
-        "numValidators": {
-            "value": 4
+        "numBlockMakers": {
+            "value": 1
+        },
+        "numVoters": {
+            "value": 3
         },
         "numObservers": {
             "value": 0
         },
         "vmSize": {
-            "value": "Standard_D2s_v3"
+            "value": "Standard_D1_v2"
         },
         "ethereumNetworkID": {
             "value": 10101010
@@ -39,7 +42,7 @@
             "value": null
         },
         "location": {
-            "value": "westus"
+            "value": "westeurope"
         }
     }
 }
