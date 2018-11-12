@@ -54,3 +54,8 @@ curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 go get github.com/getamis/istanbul-tools/cmd/istanbul
+
+cd ..
+get clone https://github.com/Dongbumlee/iBFTQuorum.git
+
+
