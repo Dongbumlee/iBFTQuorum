@@ -1,4 +1,4 @@
-ecoh "stop processes"
+echo "stop processes"
 bash ./stop.sh
 echo "clear datas"
 rm ~/.ethereum/geth/chaindata -r -f
