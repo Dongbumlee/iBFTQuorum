@@ -23,7 +23,6 @@ nohup geth \
                 --debug \
                 --metrics \
                 --syncmode "full" \
-                --ethstats "[your server name]:bb98a0b6442386d0cdf8a31b267892c1@[your server ip]:3000" \
                 --gasprice 0 \
                 --unlock 0 \
                 --password passwords.txt  1>> gethlog.log &
